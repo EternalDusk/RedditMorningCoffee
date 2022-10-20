@@ -16,7 +16,7 @@ import json
 nsfw_flag = True
 
 
-def scrape_subreddits():
+def scrape_subreddits(subreddits):
 
     #log in to reddit
     print("Logging into reddit...")
@@ -24,15 +24,9 @@ def scrape_subreddits():
     #logs in using praw.ini file
     reddit = praw.Reddit("bot")
 
-    #list of subreddits to scrape
-    subreddits = {"AskReddit" : "hot"}
-    # key = subreddit
-    # value = type of post to get (controversial, gilded, hot, new, rising, top)
-
+    
     #list of data to be worked with
     response_data = {}
-    # key = subreddit name
-    # value = [id, title, author, score, [top comments]]
 
     for sub in subreddits:
         scraped_data = reddit.subreddit(sub)
@@ -72,15 +66,20 @@ def scrape_subreddits():
 def main():
 
     # Setting to test functionality
-    get_new_data = False
+    get_new_data = True
+
+    # Setting to check what subreddits to scrape and by what type
+    # Key = name of subreddit
+    # Value = subreddit sorting method (controversial, rising, top, hot, new, gilded) 
+    subreddits = {"AskReddit": "hot"}
 
     if get_new_data == True:
-        scraped_dictionary = scrape_subreddits()
-        with open('saved_dictionary.pkl', 'wb') as f:
-            pickle.dump(scraped_dictionary, f)
+        scraped_dictionary = scrape_subreddits(subreddits)
+        with open('saved_dictionary.json', 'w') as f:
+            json.dump(scraped_dictionary, f)
     else:
-        with open('saved_dictionary.pkl', 'rb') as f:
-            loaded_dictionary = pickle.load(f)
+        with open('saved_dictionary.json', 'r') as f:
+            loaded_dictionary = json.load(f)
             # key = subreddit name
             # value = [id, title, author, score, [top comments]]
             print(f'{json.dumps(loaded_dictionary)}')
